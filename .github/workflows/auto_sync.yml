@@ -1,0 +1,51 @@
+name: auto_sync
+
+on:
+#  push:
+#    branches:
+#      - master
+  schedule:
+    - cron: 0 22 * * *
+  workflow_dispatch:
+    inputs:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    name: auto_sync
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: static list
+        uses: Yikun/hub-mirror-action@master
+        with:
+          src: github/artxia
+          dst: gitee/artxia
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+          dst_token: ${{ secrets.GITEE_TOKEN }}
+          static_list: "frappe,erpnext"
+          
+      - name: 'Create UUID'
+        run: echo $(cat /proc/sys/kernel/random/uuid) > UUID
+      
+      - name: 'Commit Files'
+        id: commit
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git diff --quiet && git diff --staged --quiet || git commit -am 'Keep Workflow Alive'
+          echo ::set-output name=status::success
+           
+      - name: 'GitHub Push'
+        if: steps.commit.output.status != 'success'
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+          
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 2
+          keep_minimum_runs: 6
