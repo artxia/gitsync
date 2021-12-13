@@ -23,7 +23,15 @@ jobs:
           dst: gitee/artxia
           dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
           dst_token: ${{ secrets.GITEE_TOKEN }}
-          static_list: "frappe,erpnext"
+          static_list: "erpnext"
+          
+        uses: Yikun/hub-mirror-action@master
+        with:
+          src: github/artxia
+          dst: gitee/artxia
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+          dst_token: ${{ secrets.GITEE_TOKEN }}
+          static_list: "frappe"
           
       - name: 'Create UUID'
         run: echo $(cat /proc/sys/kernel/random/uuid) > UUID
