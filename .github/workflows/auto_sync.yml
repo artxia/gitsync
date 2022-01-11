@@ -40,4 +40,4 @@ jobs:
           dst: gitee/artxia
           dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
           dst_token: ${{ secrets.GITEE_TOKEN }}
-          static_list: "erpnext,frappe"
+          static_list: "frappe"
